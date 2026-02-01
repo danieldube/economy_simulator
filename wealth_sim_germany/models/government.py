@@ -8,8 +8,7 @@ from wealth_sim_germany.utils.types import GovFunction
 
 
 class TransferRule(Protocol):
-    def compute_transfer(self, person: Person, government: Government) -> float:
-        ...
+    def compute_transfer(self, person: Person, government: Government) -> float: ...
 
 
 @dataclass
