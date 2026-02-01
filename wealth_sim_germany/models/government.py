@@ -37,9 +37,11 @@ class Government:
             spending_shares.update(policy_overrides)
         total_share = sum(spending_shares.values())
         if total_share <= 0:
-            self.expenditure = {function: 0.0 for function in spending_shares}
+            self.expenditure = dict.fromkeys(spending_shares, 0.0)
             return
-        normalized_shares = {function: share / total_share for function, share in spending_shares.items()}
+        normalized_shares = {
+            function: share / total_share for function, share in spending_shares.items()
+        }
         self.expenditure = {
             function: self.total_revenue * share for function, share in normalized_shares.items()
         }

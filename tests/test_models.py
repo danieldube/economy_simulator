@@ -156,4 +156,6 @@ def test_government_apply_fiscal_rules_caps_deficit_and_updates_debt():
     assert government.deficit == pytest.approx(30.0)
     assert government.debt == pytest.approx(30.0)
     assert government.expenditure[GovFunction.EDUCATION] == pytest.approx(69.333333, rel=1e-4)
-    assert government.expenditure[GovFunction.SOCIAL_PROTECTION] == pytest.approx(60.666667, rel=1e-4)
+    assert government.expenditure[GovFunction.SOCIAL_PROTECTION] == pytest.approx(
+        60.666667, rel=1e-4
+    )
