@@ -8,7 +8,7 @@ from wealth_sim_germany.utils.types import GovFunction
 
 
 class TransferRule(Protocol):
-    def compute_transfer(self, person: Person, government: "Government") -> float:
+    def compute_transfer(self, person: Person, government: Government) -> float:
         ...
 
 
@@ -29,7 +29,10 @@ class Government:
         self.social_contributions = sum(person.social_contrib for person in persons)
         self.total_revenue = self.tax_revenue + self.social_contributions
 
-    def allocate_expenditure(self, policy_overrides: dict[GovFunction, float] | None = None) -> None:
+    def allocate_expenditure(
+        self,
+        policy_overrides: dict[GovFunction, float] | None = None,
+    ) -> None:
         spending_shares = dict(self.spending_shares)
         if policy_overrides:
             spending_shares.update(policy_overrides)

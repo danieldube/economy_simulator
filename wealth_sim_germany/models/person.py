@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from wealth_sim_germany.utils.types import EducationLevel, Region, Sex
 
@@ -29,13 +29,23 @@ class Person:
         self.total_income = self.labor_income + self.capital_income + self.transfers
         return self.total_income
 
-    def apply_tax_result(self, income_tax: float, social_contrib: float, capital_tax: float) -> None:
+    def apply_tax_result(
+        self,
+        income_tax: float,
+        social_contrib: float,
+        capital_tax: float,
+    ) -> None:
         self.taxes = income_tax + capital_tax
         self.social_contrib = social_contrib
         gross_income = self.total_income or self.compute_total_gross_income()
         self.net_income = gross_income - self.taxes - self.social_contrib
 
-    def update_wealth(self, savings_rate: float, labor_return_rate: float, capital_return_rate: float) -> None:
+    def update_wealth(
+        self,
+        savings_rate: float,
+        labor_return_rate: float,
+        capital_return_rate: float,
+    ) -> None:
         savings = self.net_income * savings_rate
         labor_return = self.liquid_assets * labor_return_rate
         capital_return = self.illiquid_assets * capital_return_rate
