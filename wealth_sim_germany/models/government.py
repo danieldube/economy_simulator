@@ -35,16 +35,27 @@ class Government:
         spending_shares = dict(self.spending_shares)
         if policy_overrides:
             spending_shares.update(policy_overrides)
+        total_share = sum(spending_shares.values())
+        if total_share <= 0:
+            self.expenditure = {function: 0.0 for function in spending_shares}
+            return
+        normalized_shares = {function: share / total_share for function, share in spending_shares.items()}
         self.expenditure = {
-            function: self.total_revenue * share for function, share in spending_shares.items()
+            function: self.total_revenue * share for function, share in normalized_shares.items()
         }
 
     def apply_fiscal_rules(self) -> None:
-        if self.gdp <= 0:
-            return
-        max_deficit = self.gdp * self.deficit_limit
-        if self.deficit > max_deficit:
-            self.deficit = max_deficit
+        total_expenditure = sum(self.expenditure.values())
+        self.deficit = total_expenditure - self.total_revenue
+        if self.gdp > 0:
+            max_deficit = self.gdp * self.deficit_limit
+            if self.deficit > max_deficit and total_expenditure > 0:
+                scale = (self.total_revenue + max_deficit) / total_expenditure
+                self.expenditure = {
+                    function: amount * scale for function, amount in self.expenditure.items()
+                }
+                self.deficit = max_deficit
+        self.debt += self.deficit
 
     def pay_transfers(self, persons: list[Person], transfer_rule: TransferRule) -> None:
         for person in persons:
