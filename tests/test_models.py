@@ -117,3 +117,45 @@ def test_government_pays_transfers():
 
     assert persons[0].transfers == pytest.approx(500.0)
     assert persons[1].transfers == pytest.approx(500.0)
+
+
+def test_government_allocate_expenditure_normalizes_shares():
+    government = Government(
+        spending_shares={
+            GovFunction.EDUCATION: 0.6,
+            GovFunction.SOCIAL_PROTECTION: 0.6,
+        },
+        deficit_limit=0.03,
+        gdp=100_000.0,
+        total_revenue=100.0,
+    )
+
+    government.allocate_expenditure()
+
+    assert government.expenditure[GovFunction.EDUCATION] == pytest.approx(50.0)
+    assert government.expenditure[GovFunction.SOCIAL_PROTECTION] == pytest.approx(50.0)
+
+
+def test_government_apply_fiscal_rules_caps_deficit_and_updates_debt():
+    government = Government(
+        spending_shares={
+            GovFunction.EDUCATION: 0.5,
+            GovFunction.SOCIAL_PROTECTION: 0.5,
+        },
+        deficit_limit=0.03,
+        gdp=1_000.0,
+        total_revenue=100.0,
+    )
+    government.expenditure = {
+        GovFunction.EDUCATION: 80.0,
+        GovFunction.SOCIAL_PROTECTION: 70.0,
+    }
+
+    government.apply_fiscal_rules()
+
+    assert government.deficit == pytest.approx(30.0)
+    assert government.debt == pytest.approx(30.0)
+    assert government.expenditure[GovFunction.EDUCATION] == pytest.approx(69.333333, rel=1e-4)
+    assert government.expenditure[GovFunction.SOCIAL_PROTECTION] == pytest.approx(
+        60.666667, rel=1e-4
+    )
