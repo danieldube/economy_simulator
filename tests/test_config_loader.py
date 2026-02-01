@@ -1,7 +1,9 @@
-import pytest
 import json
 
+import pytest
+
 from wealth_sim_germany.config.loader import load_scenario_config
+from wealth_sim_germany.config.schemas import ConfigError
 from wealth_sim_germany.utils.types import GovFunction
 
 
@@ -58,5 +60,5 @@ def test_load_scenario_config_rejects_extra_keys(tmp_path):
     config_path = tmp_path / "scenario.yaml"
     config_path.write_text(json.dumps(scenario_data))
 
-    with pytest.raises(Exception):
+    with pytest.raises(ConfigError):
         load_scenario_config(config_path)

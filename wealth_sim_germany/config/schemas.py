@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Optional
 
 from wealth_sim_germany.utils.types import GovFunction
 
@@ -27,7 +26,7 @@ class TaxConfig:
     social_contrib_rate: float
 
     @classmethod
-    def from_dict(cls, data: dict) -> "TaxConfig":
+    def from_dict(cls, data: dict) -> TaxConfig:
         _ensure_keys(data, {"income_tax_rate", "capital_gains_rate", "social_contrib_rate"})
         income_tax_rate = float(data["income_tax_rate"])
         capital_gains_rate = float(data["capital_gains_rate"])
@@ -48,16 +47,16 @@ class TaxConfig:
 
 @dataclass(frozen=True)
 class GovernmentSpendingConfig:
-    spending_shares: Dict[GovFunction, float]
+    spending_shares: dict[GovFunction, float]
     deficit_limit: float
 
     @classmethod
-    def from_dict(cls, data: dict) -> "GovernmentSpendingConfig":
+    def from_dict(cls, data: dict) -> GovernmentSpendingConfig:
         _ensure_keys(data, {"spending_shares", "deficit_limit"})
         spending_shares_raw = data["spending_shares"]
         if not isinstance(spending_shares_raw, dict):
             raise ConfigError("spending_shares must be a mapping")
-        spending_shares: Dict[GovFunction, float] = {}
+        spending_shares: dict[GovFunction, float] = {}
         for key, value in spending_shares_raw.items():
             try:
                 enum_key = GovFunction(key)
@@ -76,7 +75,7 @@ class PopulationConfig:
     synthetic_n: int
 
     @classmethod
-    def from_dict(cls, data: dict) -> "PopulationConfig":
+    def from_dict(cls, data: dict) -> PopulationConfig:
         _ensure_keys(data, {"total_population", "synthetic_n"})
         total_population = int(data["total_population"])
         synthetic_n = int(data["synthetic_n"])
@@ -91,17 +90,17 @@ class MacroParams:
     inflation: float
 
     @classmethod
-    def from_dict(cls, data: dict) -> "MacroParams":
+    def from_dict(cls, data: dict) -> MacroParams:
         _ensure_keys(data, {"gdp_growth", "inflation"})
         return cls(gdp_growth=float(data["gdp_growth"]), inflation=float(data["inflation"]))
 
 
 @dataclass(frozen=True)
 class BacktestConfig:
-    reference_year: Optional[int] = None
+    reference_year: int | None = None
 
     @classmethod
-    def from_dict(cls, data: dict) -> "BacktestConfig":
+    def from_dict(cls, data: dict) -> BacktestConfig:
         _ensure_keys(data, {"reference_year"}, optional=set())
         reference_year = data.get("reference_year")
         if reference_year is not None:
@@ -118,10 +117,10 @@ class ScenarioConfig:
     government: GovernmentSpendingConfig
     population: PopulationConfig
     macro: MacroParams
-    backtest: Optional[BacktestConfig] = None
+    backtest: BacktestConfig | None = None
 
     @classmethod
-    def from_dict(cls, data: dict) -> "ScenarioConfig":
+    def from_dict(cls, data: dict) -> ScenarioConfig:
         _ensure_keys(
             data,
             {"name", "start_year", "years", "tax", "government", "population", "macro"},
