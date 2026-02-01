@@ -91,9 +91,19 @@ def test_wealth_model_initialises_assets_and_net_wealth() -> None:
 
 def test_wealth_model_evolves_assets_with_macro_params() -> None:
     factory = DistributionFactory()
-    factory.register("savings_rate", lambda rng, conditions=None: 0.1)
-    factory.register("labor_return", lambda rng, conditions=None: 0.02)
-    factory.register("capital_return", lambda rng, conditions=None: 0.03)
+
+    def savings_rate_sampler(rng: random.Random, conditions: dict | None = None) -> float:
+        return 0.1
+
+    def labor_return_sampler(rng: random.Random, conditions: dict | None = None) -> float:
+        return 0.02
+
+    def capital_return_sampler(rng: random.Random, conditions: dict | None = None) -> float:
+        return 0.03
+
+    factory.register("savings_rate", savings_rate_sampler)
+    factory.register("labor_return", labor_return_sampler)
+    factory.register("capital_return", capital_return_sampler)
     model = WealthModel(factory)
     person = Person(
         age=50,
