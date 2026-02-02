@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Iterable
+from collections.abc import Iterable
 
 from wealth_sim_germany.models.government import Government
 from wealth_sim_germany.models.person import Person
@@ -54,7 +54,11 @@ def aggregate_by_group(
     }
 
 
-def build_aggregates(persons: Iterable[Person], government: Government, year: int) -> dict[str, float]:
+def build_aggregates(
+    persons: Iterable[Person],
+    government: Government,
+    year: int,
+) -> dict[str, float]:
     persons_list = list(persons)
     weights = [person.weight for person in persons_list]
     total_income = sum(person.total_income * person.weight for person in persons_list)
@@ -68,9 +72,7 @@ def build_aggregates(persons: Iterable[Person], government: Government, year: in
         "total_gross_income": total_income,
         "total_net_income": total_net_income,
         "total_taxes": total_taxes,
-        "avg_net_income": weighted_mean(
-            [person.net_income for person in persons_list], weights
-        ),
+        "avg_net_income": weighted_mean([person.net_income for person in persons_list], weights),
         "gini_net_income": gini([person.net_income for person in persons_list], weights),
         "government_revenue": government.total_revenue,
         "government_deficit": government.deficit,

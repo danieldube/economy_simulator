@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
 import random
+from dataclasses import dataclass
 
 from wealth_sim_germany.analysis.aggregations import (
     aggregate_by_group,
@@ -57,11 +56,26 @@ def _build_scenario() -> ScenarioConfig:
 def test_run_single_year_updates_agents() -> None:
     factory = DistributionFactory()
 
-    factory.register("labor_income", lambda rng, conditions=None: 100.0)
-    factory.register("capital_income", lambda rng, conditions=None: 50.0)
-    factory.register("savings_rate", lambda rng, conditions=None: 0.1)
-    factory.register("labor_return", lambda rng, conditions=None: 0.01)
-    factory.register("capital_return", lambda rng, conditions=None: 0.02)
+    def labor_income_sampler(rng: random.Random, conditions: dict | None = None) -> float:
+        return 100.0
+
+    def capital_income_sampler(rng: random.Random, conditions: dict | None = None) -> float:
+        return 50.0
+
+    def savings_rate_sampler(rng: random.Random, conditions: dict | None = None) -> float:
+        return 0.1
+
+    def labor_return_sampler(rng: random.Random, conditions: dict | None = None) -> float:
+        return 0.01
+
+    def capital_return_sampler(rng: random.Random, conditions: dict | None = None) -> float:
+        return 0.02
+
+    factory.register("labor_income", labor_income_sampler)
+    factory.register("capital_income", capital_income_sampler)
+    factory.register("savings_rate", savings_rate_sampler)
+    factory.register("labor_return", labor_return_sampler)
+    factory.register("capital_return", capital_return_sampler)
 
     income_model = IncomeModel(factory)
     wealth_model = WealthModel(factory)
@@ -167,11 +181,27 @@ def test_analytics_helpers() -> None:
 def test_simulation_controller_runs_and_returns_results() -> None:
     scenario = _build_scenario()
     factory = DistributionFactory()
-    factory.register("labor_income", lambda rng, conditions=None: 20.0)
-    factory.register("capital_income", lambda rng, conditions=None: 5.0)
-    factory.register("savings_rate", lambda rng, conditions=None: 0.1)
-    factory.register("labor_return", lambda rng, conditions=None: 0.0)
-    factory.register("capital_return", lambda rng, conditions=None: 0.0)
+
+    def labor_income_sampler(rng: random.Random, conditions: dict | None = None) -> float:
+        return 20.0
+
+    def capital_income_sampler(rng: random.Random, conditions: dict | None = None) -> float:
+        return 5.0
+
+    def savings_rate_sampler(rng: random.Random, conditions: dict | None = None) -> float:
+        return 0.1
+
+    def labor_return_sampler(rng: random.Random, conditions: dict | None = None) -> float:
+        return 0.0
+
+    def capital_return_sampler(rng: random.Random, conditions: dict | None = None) -> float:
+        return 0.0
+
+    factory.register("labor_income", labor_income_sampler)
+    factory.register("capital_income", capital_income_sampler)
+    factory.register("savings_rate", savings_rate_sampler)
+    factory.register("labor_return", labor_return_sampler)
+    factory.register("capital_return", capital_return_sampler)
 
     controller = SimulationController(
         scenario=scenario,
